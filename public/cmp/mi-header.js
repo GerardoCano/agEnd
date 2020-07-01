@@ -3,7 +3,7 @@ class MiHeader extends HTMLElement {
         this.innerHTML = /* html */
             `
             <header>
-              <nav class="shadow p-3 mb-5 rounded" style="margin-bottom: 5rem; padding: 1rem;">
+              <nav class="shadow p-3 mb-5 rounded" style="margin-bottom: 4rem; padding: 1rem;">
                 <div class="row justify-content-between">
                 <div class="col-4">
                     <a class="navbar-brand" href="index.html">Agenda de Contactos</a>

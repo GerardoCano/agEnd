@@ -2,7 +2,7 @@
  * cualquier cambio en el contenido de este archivo hace que el service worker
  * se reinstale. Normalmente se cambia el número en el nombre del caché cuando
  * cambia el contenido de los archivos. */
-const CACHE = "agEnd-1.1";
+const CACHE = "agEnd-1.2";
 /**  Archivos requeridos para que la aplicación funcione fuera de línea.
  * El archivo 404.html no se incluye porque causa un error 404. */
 const ARCHIVOS = [
