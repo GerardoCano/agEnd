@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agenda de Contactos</title>
+    <!-- Framework de estilos -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.15.5/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/7.15.5/firebase-auth.js"></script>
+    <script defer src="/__/firebase/7.15.5/firebase-database.js"></script>
+    <script defer src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/7.15.5/firebase-storage.js"></script>
+    <!-- Carga el núcleo de Firebase JS SDK -->
+    <script src="/__/firebase/7.15.0/firebase-app.js"></script>
+    <!-- Agrega el manejo de bases de datos. -->
+    <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+    <!-- Agrega el manejo de bases de datos. -->
+    <script defer src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+    <!-- Configura la app usando la información del sitio de Firebase. -->
+    <script src="/__/firebase/init.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <!-- creación de enlace para agregar el footer -->
+    <script type="module" src="cmp/mi-footer.js"></script>
+    <script type="module" src="cmp/mi-header.js"></script>
+    <link rel="stylesheet" href="css/estilos.css">
+  </head>
+  <body>
+      <form action="javascript:guarda()">
+        <mi-header>
+        </mi-header>
+        <div class="container rounded-lg shadow p-3 mb-5 bg-white rounded" style="width: 95%; height: 90%;">
+          <h2>Contactos</h2>
+       <div class="row">
+       <div class="input-group input-group-lg col" style="margin: 0.5rem;">
+         <div class="input-group-prepend">
+           <span class="input-group-text" id="basic-addon1">Nombre</span>
+         </div>
+         <input type="text" class="form-control" placeholder="Nombre" aria-label="inputGroup-sizing-lg" aria-describedby="inputGroup-sizing-lg" id="nombre" pattern="[a-zA-ZáÁ óÓñÑéÉ]{3,30}" required value="">
+       </div>
+       </div>
+       <div class="row">
+       <div class="input-group input-group-lg col" style="margin: 0.5rem;">
+         <div class="input-group-prepend">
+           <span class="input-group-text" id="basic-addon1">Apellidos</span>
+         </div>
+         <input type="text" class="form-control" placeholder="Apellidos" aria-label="inputGroup-sizing-lg" aria-describedby="inputGroup-sizing-lg" id="apellidos" pattern="[a-zA-ZáÁóÓ ñÑéÉ]{4,30}" required value="">
+       </div>
+       </div>
+       <div class="row">
+         <div class="input-group input-group-lg col" style="margin: 0.5rem;">
+           <div class="input-group-prepend">
+             <span class="input-group-text" id="basic-addon1">#</span>
+           </div>
+           <input type="text" class="form-control" placeholder="Telefono de Contacto" aria-label="inputGroup-sizing-lg" aria-describedby="inputGroup-sizing-lg" id="telefono" pattern="[0-9]{10,15}" required value="">
+         </div>
+       </div>
+       <div class="row">
+         <div class="input-group input-group-lg col" style="margin: 0.5rem;">
+           <div class="input-group-prepend">
+             <span class="input-group-text" id="basic-addon1">@</span>
+           </div>
+           <input type="email" class="form-control" placeholder="Correo electrónico" aria-label="inputGroup-sizing-lg" aria-describedby="inputGroup-sizing-lg" id="mail" required value="">
+         </div>
+       </div>
+        <div class="row" id="lista">
+      
+        </div>
+      </div>
+      <script>
+        /** Id del objeto seleccionado en la lista. */
+        let id = "";
+        const firestore = firebase.firestore();
+        muestraLista();
+        alta();
+        function muestraLista() {
+          /* Pide todos los registros de la colección "PASATIEMPO" ordenados por
+           * el campo "PAS_NOMBRE" de forma ascendente. */
+          firestore.collection("contactos").orderBy("nombre").onSnapshot(
+            documentos => {
+              let inner = "";
+              documentos.forEach(doc =>
+                inner += /* html */
+                `
+                    <div class="card shadow mx-sm-3 p-2 ml-5 mb-5 bg-light rounded">
+                      <img src="images/perfil-default.jpg" class="card-img-top" alt="Imagen de Contacto">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-light"><b>${cod(doc.data().nombre)} ${cod(doc.data().apellidos)}</b></li>
+                        <li class="list-group-item bg-light">${cod(doc.data().telefono)}</li>
+                        <li class="list-group-item bg-light">${cod(doc.data().email)}</li>
+                        <li class="list-group-item bg-light"><button type=button onclick="muestra('${cod(doc.id)}')" class="btn btn-info text-white">Editar</button><button type=button id="eliminar" onclick="elimina('${cod(doc.id)}');" class="btn btn-info text-white">Eliminar</button></li>
+                      </ul>
+                    </div>
+                `);
+              lista.innerHTML = inner;
+            },
+            e => {
+              procesaError(e);
+              muestraLista();
+            }
+          );
+        }
+        /** Prepara la forma para capturar un pasatiempo nuevo. */
+        /** Prepara la forma para modificar el documento que corresponde al
+         * id seleccionado en el listado.
+         * @param {string} idSel id del documento seleccionado en el listado. */
+        async function muestra(idSel) {
+          try {
+            /* Recupera el documento con el id seleccionado en la colección
+             * "PASATIEMPO". */
+            let doc = await firestore.collection("contactos").doc(idSel).get();
+            if (doc.exists) {
+              id = doc.id;
+              let data = doc.data();
+              nombre.value = data.nombre;
+              apellidos.value = data.apellidos;
+              telefono.value = data.telefono;
+              mail.value = data.email;
+            } else {
+              alert("El contacto selecionado no está registrado.");
+            }
+          } catch (e) {
+            procesaError(e);
+          }
+        }
+        async function guarda() {
+          try {
+            const modelo = {
+              nombre: nombre.value.trim(),
+              apellidos: apellidos.value.trim(),
+              telefono: telefono.value.trim(),
+              email: mail.value.trim(),
+              id: telefono.value.trim()
+            };
+            if (id) {
+              /* Modifica el modelo en la base de datos en base al id y espera a
+               * que termine. */
+              await firestore.collection("contactos").doc(id).set(modelo);
+              limpia();
+            } else {
+              /* Agrega el modelo a la base de datos, genera automáticamente el
+               * id y espera a que termine. */
+              await firestore.collection("contactos").add(modelo);
+              limpia();
+            }
+          } catch (e) {
+            procesaError(e);
+          }
+        }
+
+        async function limpia() {
+          try {
+              id = "";
+              nombre.value = "";
+              apellidos.value = "";
+              telefono.value = "";
+              mail.value = "";
+          } catch (e) {
+            procesaError(e);
+          }
+        }
+
+        async function elimina(idSel) {
+          try {
+            /* Elimina el documento en la base de datos usando el id y espera a
+             * que termine. */
+            let doc = await firestore.collection("contactos").doc(idSel).get();
+            if (doc.exists) {
+              await firestore.collection("contactos").doc(idSel).delete();
+            } else {
+              alert("El contacto selecionado no está registrado.");
+            }
+          } catch (e) {
+            procesaError(e);
+          }
+        }
+        function procesaError(e) {
+          console.log(e);
+          alert(e.message);
+        }
+        /** Codifica la información textual para que no inyecte código HTML.
+         * @param {any} valor información a codificar.
+         * @returns {string} el texto transformado. */
+        function cod(valor) {
+          return (valor || "").toString()
+            .replace(/[<>"']/g,
+              /** @param {string} letra */
+              letra => {
+                switch (letra) {
+                  case "<": return "&lt;";
+                  case ">": return "&gt;";
+                  case '"': return "&quot;";
+                  case "'": return "&#039;";
+                  default: return letra;
+                }
+              });
+        }
+      </script>
+      </div>
+    </form>
+      <mi-footer></mi-footer>
+    </body>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</html>

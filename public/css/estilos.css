@@ -1,0 +1,55 @@
+:root{
+    --fondo: #343a40;
+}
+
+body{
+    background-color: var(--fondo);
+}
+
+div.container{
+    width: 95%;
+    height: 95%;
+}
+
+nav{
+    background-color: #1e1e1e;
+    color: #f8f9fa;
+}
+
+a{
+    color: #f8f9fa;
+}
+
+a:hover,a:focus{
+    color: #E45A5A;
+}
+
+a.btn{
+    margin: 0.5rem;
+}
+
+button.btn{
+    margin: 0.5rem;
+    text-decoration: none;
+    color: black;
+}
+
+.card{
+    font-size: 13px;
+    text-align: center;
+    width: 15rem;
+    margin: 2rem;
+}
+
+.input-group-prepend{
+    margin-bottom: 2rem;
+}
+
+h2{
+    margin: 2rem 0 2rem 1rem;
+}
+
+blockquote{
+    margin-top: 4rem;
+    padding: 4.7rem 0 5rem 0;
+}
